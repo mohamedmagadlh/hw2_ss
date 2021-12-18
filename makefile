@@ -1,18 +1,23 @@
 	
-all: connections
+CC = gcc
+AR = ar
+FLAGS = -Wall -g
 
-connections: main.o my_mat.a
-	gcc -Wall -g -o connections main.o my_mat.a
+all: my_mat.so connections
+
+my_mat.so: my_mat.o
+	$(CC) -shared -o my_mat.so my_mat.o
+
+my_mat.o: my_mat.h my_mat.c
+	$(CC) $(FLAGS) -c my_mat.c
 
 main.o: main.c my_mat.h
-	gcc -Wall -g -c main.c
+	$(CC) $(FLAGS) -c main.c
 
-my_mat.o: my_mat.c my_mat.h
-	gcc -Wall -g -c my_mat.c
+connections: main.o my_mat.so
+	$(CC) $(FLAGS) -o connections main.o ./my_mat.so
 
-my_mat.a: main.o my_mat.o
-	ar -rcs my_mat.a main.o my_mat.o
+.PHONY: clean all
 
-.PHONY:clean all
 clean:
-	rm -f *.o *.a connections
+	del -fr *.o *.so *.exe
